@@ -105,20 +105,20 @@ def depthFirstSearch(problem):
     posAct = estadoIni
 
     for sucesor in problem.getSuccessors(posAct):
-        sucesores.push(sucesor)
+        direccion = sucesor[1]
+        hastaLlegar =  direcciones + [direccion]
+        sucesores.push((sucesor[0], hastaLlegar))
 
     while not problem.isGoalState(posAct) and not sucesores.isEmpty(): 
-        sucesorAct = sucesores.pop() # siguiente estado, accion (norte, sur, este, oeste), coste = 1
+        posAct, direcciones = sucesores.pop() # siguiente estado, accion (norte, sur, este, oeste)
 
-        posAct = sucesorAct[0] # cogemos la posición del sucesor
+        setPosicionesVisitadas.add(posAct) # Añadimos al conjunto las casillas visitadas
 
         for sucesor in problem.getSuccessors(posAct):
             if sucesor[0] not in setPosicionesVisitadas:
-                direccion = sucesorAct[1] # cogemos la dirección a la que tiene que para pasar por la casilla sucesora
-                direcciones.append(direccion)
-                sucesores.push(sucesor) # Añadimos a la pila los sucesores de la posición actual
-
-        setPosicionesVisitadas.add(posAct) # Añadimos al conjunto las casillas visitadas
+                direccion = sucesor[1]
+                hastaLlegar =  direcciones + [direccion]
+                sucesores.push((sucesor[0], hastaLlegar))
 
     if sucesores.isEmpty() and not problem.isGoalState(posAct): # Si no hay más sucesoras es porque no ha encontrado la casilla final
         direcciones = None
