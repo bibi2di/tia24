@@ -176,33 +176,35 @@ def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     estadoIni = problem.getStartState()
     sucesores = util.Queue()
-    visitadas = []
-    setVisitadas = set(visitadas)
+    posVisitadas = []
+    setPosicionesVisitadas = set(posVisitadas)
     direcciones = []
-    nodoAct = estadoIni
+    posAct = estadoIni
 
-    for sucesor in problem.getSuccessors(nodoAct):
+    for sucesor in problem.getSuccessors(posAct):
         direccion = sucesor[1]
-        hastaLlegar = direcciones + [direccion]
+        hastaLlegar =  direcciones + [direccion]
         sucesores.push((sucesor[0], hastaLlegar))
 
-    while not problem.isGoalState(nodoAct) and not sucesores.isEmpty():
-        nodoAct, direcciones = sucesores.pop()
-        setVisitadas.add(nodoAct)
+    while not sucesores.isEmpty(): 
+        posAct, direcciones = sucesores.pop() # siguiente estado, accion (norte, sur, este, oeste)
 
-        for sucesor in problem.getSuccessors(nodoAct):
-            if sucesor[0] not in setVisitadas:
-                direccion = sucesor[1]
-                hastaLlegar = direcciones + [direccion]
-                sucesores.push((sucesor[0], hastaLlegar))
+        if problem.isGoalState(posAct):
+            return direcciones
 
-    if sucesores.isEmpty and not problem.isGoalState(nodoAct):
+        if posAct not in setPosicionesVisitadas:
+            setPosicionesVisitadas.add(posAct) # Añadimos al conjunto las casillas visitadas
+
+            for sucesor in problem.getSuccessors(posAct):
+                if sucesor[0] not in setPosicionesVisitadas:
+                    direccion = sucesor[1]
+                    hastaLlegar =  direcciones + [direccion]
+                    sucesores.push((sucesor[0], hastaLlegar))
+
+    if sucesores.isEmpty() and not problem.isGoalState(posAct): # Si no hay más sucesoras es porque no ha encontrado la casilla final
         direcciones = None
 
-    print(direcciones)
-
     return direcciones
-    
 
 
 def uniformCostSearch(problem):
