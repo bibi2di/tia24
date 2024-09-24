@@ -91,12 +91,11 @@ def depthFirstSearch(problem):
     understand the search problem that is being passed in:
     """
 
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+    #print("Start:", problem.getStartState())
+    #print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    #print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     
     "*** YOUR CODE HERE ***"
-
     estadoIni = problem.getStartState()
     sucesores = util.Stack()
     posVisitadas = []
@@ -109,8 +108,11 @@ def depthFirstSearch(problem):
         hastaLlegar =  direcciones + [direccion]
         sucesores.push((sucesor[0], hastaLlegar))
 
-    while not problem.isGoalState(posAct) and not sucesores.isEmpty(): 
+    while not sucesores.isEmpty(): 
         posAct, direcciones = sucesores.pop() # siguiente estado, accion (norte, sur, este, oeste)
+
+        if problem.isGoalState(posAct):
+            return direcciones
 
         setPosicionesVisitadas.add(posAct) # Añadimos al conjunto las casillas visitadas
 
@@ -126,11 +128,81 @@ def depthFirstSearch(problem):
     print(direcciones)
 
     return direcciones
+"""
+    # Estado inicial de pacman
+    estadoIni = problem.getStartState()
+    print("Start:", estadoIni)
+    print("Is the start a goal?", problem.isGoalState(estadoIni))
+    # Pila sucesores
+    sucesores = util.Stack()
+    # set de posiciones visitadas
+    setPosicionesVisitadas = set()
+    direcciones = []
+
+    sucesores.push((estadoIni, []))
+
+    # control:
+
+    while not sucesores.isEmpty():
+        # sacamos el nodo actual de la pila
+        
+        nodoAct, direcciones = sucesores.pop()
+        #print(f"\nPosición actual: {nodoAct}, Camino recorrido: {direcciones}")
+
+        # si la posicion es goal, devuelve direcciones
+        if problem.isGoalState(nodoAct):
+         #   print(f"Meta encontrada en {nodoAct}, direcciones: {direcciones}")
+            return direcciones
+        
+        if nodoAct not in setPosicionesVisitadas:
+            setPosicionesVisitadas.add(nodoAct)
+          #  print(f"Visitados: {setPosicionesVisitadas}")
+
+            for sucesor in problem.getSuccessors(nodoAct):
+                posSucesor, direccion, _ = sucesor
+
+                if posSucesor not in setPosicionesVisitadas:
+                    sucesores.push((posSucesor, direcciones + [direccion]))
+           #         print(f"Agregando sucesor {posSucesor} a la pila con dirección {direccion}")
+
+    if sucesores.isEmpty() and not problem.isGoalState(nodoAct):
+        direcciones = None
+    
+    return direcciones"""
+
+
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    estadoIni = problem.getStartState()
+    sucesores = util.Queue()
+    visitadas = []
+    setVisitadas = set(visitadas)
+    direcciones = []
+    nodoAct = estadoIni
+
+    for sucesor in problem.getSuccessors(nodoAct):
+        direccion = sucesor[1]
+        hastaLlegar = direcciones + [direccion]
+        sucesores.push((sucesor[0], hastaLlegar))
+
+    while not problem.isGoalState(nodoAct) and not sucesores.isEmpty():
+        nodoAct, direcciones = sucesores.pop()
+        setVisitadas.add(nodoAct)
+
+        for sucesor in problem.getSuccessors(nodoAct):
+            if sucesor[0] not in setVisitadas:
+                direccion = sucesor[1]
+                hastaLlegar = direcciones + [direccion]
+                sucesores.push((sucesor[0], hastaLlegar))
+
+    if sucesores.isEmpty and not problem.isGoalState(nodoAct):
+        direcciones = None
+
+    print(direcciones)
+
+    return direcciones
+    
 
 
 def uniformCostSearch(problem):
