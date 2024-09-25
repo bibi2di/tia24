@@ -198,7 +198,8 @@ def breadthFirstSearch(problem):
 
         for sucesor in problem.getSuccessors(posAct):
             if sucesor[0] not in setPosicionesVisitadas:
-                setPosicionesVisitadas.add(sucesor[0])
+                setPosicionesVisitadas.add(sucesor[0]) # Si no introducimos esta sentencia al recorre por nivel puede que algunos elementos se añadan dos veces a la cola 
+                # Esto sucede porque la cola es una estructura FIFO y al tener varios caminos puede que haya elementos que tienen los mismos sucesores 
                 direccion = sucesor[1]
                 hastaLlegar =  direcciones + [direccion]
                 sucesores.push((sucesor[0], hastaLlegar))
@@ -224,13 +225,10 @@ def uniformCostSearch(problem):
         if problem.isGoalState(posAct):
             return direcciones
 
-        if posAct not in setPosicionesVisitadas:
-            setPosicionesVisitadas.add(posAct) # Añadimos al conjunto las casillas visitadas
+        setPosicionesVisitadas.add(posAct) # Añadimos al conjunto las casillas visitadas
 
         for sucesor in problem.getSuccessors(posAct):
             if sucesor[0] not in setPosicionesVisitadas:
-                setPosicionesVisitadas.add(sucesor[0]) # Si no introducimos esta sentencia al recorre por nivel puede que algunos elementos se añadan dos veces a la cola 
-                # Esto sucede porque la cola es una estructura FIFO y al tener varios caminos puede que haya elementos que tienen los mismos sucesores 
                 direccion = sucesor[1]
                 hastaLlegar =  direcciones + [direccion]
                 coste = problem.getCostOfActions(hastaLlegar)
