@@ -98,8 +98,7 @@ def depthFirstSearch(problem):
     "*** YOUR CODE HERE ***"
     estadoIni = problem.getStartState()
     sucesores = util.Stack()
-    posVisitadas = []
-    setPosicionesVisitadas = set(posVisitadas)
+    setPosicionesVisitadas = set()
     direcciones = []
     posAct = estadoIni
 
@@ -176,8 +175,7 @@ def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     estadoIni = problem.getStartState()
     sucesores = util.Queue()
-    posVisitadas = []
-    setPosicionesVisitadas = set(posVisitadas)
+    setPosicionesVisitadas = set()
     direcciones = []
     posAct = estadoIni
 
@@ -200,6 +198,7 @@ def breadthFirstSearch(problem):
 
         for sucesor in problem.getSuccessors(posAct):
             if sucesor[0] not in setPosicionesVisitadas:
+                setPosicionesVisitadas.add(sucesor[0])
                 direccion = sucesor[1]
                 hastaLlegar =  direcciones + [direccion]
                 sucesores.push((sucesor[0], hastaLlegar))
@@ -212,17 +211,10 @@ def uniformCostSearch(problem):
     "*** YOUR CODE HERE ***"
     estadoIni = problem.getStartState()
     sucesores = util.PriorityQueue()
-    posVisitadas = []
-    setPosicionesVisitadas = set(posVisitadas)
+    setPosicionesVisitadas = set()
     direcciones = []
     posAct = estadoIni
 
-    # Esto se podría eliminar
-    for sucesor in problem.getSuccessors(posAct):
-        direccion = sucesor[1]
-        hastaLlegar =  direcciones + [direccion]
-        sucesores.push((sucesor[0], hastaLlegar))
-    
     # y ponerlo así
     sucesores.push((posAct, []), 0)
 
@@ -232,7 +224,8 @@ def uniformCostSearch(problem):
         if problem.isGoalState(posAct):
             return direcciones
 
-        setPosicionesVisitadas.add(posAct) # Añadimos al conjunto las casillas visitadas
+        if posAct not in setPosicionesVisitadas:
+            setPosicionesVisitadas.add(posAct) # Añadimos al conjunto las casillas visitadas
 
         for sucesor in problem.getSuccessors(posAct):
             if sucesor[0] not in setPosicionesVisitadas:
