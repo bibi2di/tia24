@@ -103,10 +103,14 @@ def depthFirstSearch(problem):
     direcciones = []
     posAct = estadoIni
 
-    for sucesor in problem.getSuccessors(posAct):
+    """Esto se podría eliminar"""
+    """for sucesor in problem.getSuccessors(posAct):
         direccion = sucesor[1]
         hastaLlegar =  direcciones + [direccion]
-        sucesores.push((sucesor[0], hastaLlegar))
+        sucesores.push((sucesor[0], hastaLlegar))"""
+    
+    # y ponerlo así
+    sucesores.push((posAct, []))
 
     while not sucesores.isEmpty(): 
         posAct, direcciones = sucesores.pop() # siguiente estado, accion (norte, sur, este, oeste)
@@ -122,12 +126,8 @@ def depthFirstSearch(problem):
                 hastaLlegar =  direcciones + [direccion]
                 sucesores.push((sucesor[0], hastaLlegar))
 
-    if sucesores.isEmpty() and not problem.isGoalState(posAct): # Si no hay más sucesoras es porque no ha encontrado la casilla final
-        direcciones = None
+    return None
 
-    print(direcciones)
-
-    return direcciones
 """
     # Estado inicial de pacman
     estadoIni = problem.getStartState()
@@ -181,10 +181,14 @@ def breadthFirstSearch(problem):
     direcciones = []
     posAct = estadoIni
 
-    for sucesor in problem.getSuccessors(posAct):
+    """Esto se podría eliminar"""
+    """for sucesor in problem.getSuccessors(posAct):
         direccion = sucesor[1]
         hastaLlegar =  direcciones + [direccion]
-        sucesores.push((sucesor[0], hastaLlegar))
+        sucesores.push((sucesor[0], hastaLlegar))"""
+    
+    # y ponerlo así
+    sucesores.push((posAct, []))
 
     while not sucesores.isEmpty(): 
         posAct, direcciones = sucesores.pop() # siguiente estado, accion (norte, sur, este, oeste)
@@ -192,25 +196,53 @@ def breadthFirstSearch(problem):
         if problem.isGoalState(posAct):
             return direcciones
 
-        if posAct not in setPosicionesVisitadas:
-            setPosicionesVisitadas.add(posAct) # Añadimos al conjunto las casillas visitadas
+        setPosicionesVisitadas.add(posAct) # Añadimos al conjunto las casillas visitadas
 
-            for sucesor in problem.getSuccessors(posAct):
-                if sucesor[0] not in setPosicionesVisitadas:
-                    direccion = sucesor[1]
-                    hastaLlegar =  direcciones + [direccion]
-                    sucesores.push((sucesor[0], hastaLlegar))
+        for sucesor in problem.getSuccessors(posAct):
+            if sucesor[0] not in setPosicionesVisitadas:
+                direccion = sucesor[1]
+                hastaLlegar =  direcciones + [direccion]
+                sucesores.push((sucesor[0], hastaLlegar))
 
-    if sucesores.isEmpty() and not problem.isGoalState(posAct): # Si no hay más sucesoras es porque no ha encontrado la casilla final
-        direcciones = None
-
-    return direcciones
+    return None
 
 
-def uniformCostSearch(problem):
+def uniformCostSearch(problem): 
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    estadoIni = problem.getStartState()
+    sucesores = util.PriorityQueue()
+    posVisitadas = []
+    setPosicionesVisitadas = set(posVisitadas)
+    direcciones = []
+    posAct = estadoIni
+
+    # Esto se podría eliminar
+    for sucesor in problem.getSuccessors(posAct):
+        direccion = sucesor[1]
+        hastaLlegar =  direcciones + [direccion]
+        sucesores.push((sucesor[0], hastaLlegar))
+    
+    # y ponerlo así
+    sucesores.push((posAct, []), 0)
+
+    while not sucesores.isEmpty(): 
+        posAct, direcciones = sucesores.pop() # siguiente estado, accion (norte, sur, este, oeste)
+
+        if problem.isGoalState(posAct):
+            return direcciones
+
+        setPosicionesVisitadas.add(posAct) # Añadimos al conjunto las casillas visitadas
+
+        for sucesor in problem.getSuccessors(posAct):
+            if sucesor[0] not in setPosicionesVisitadas:
+                setPosicionesVisitadas.add(sucesor[0]) # Si no introducimos esta sentencia al recorre por nivel puede que algunos elementos se añadan dos veces a la cola 
+                # Esto sucede porque la cola es una estructura FIFO y al tener varios caminos puede que haya elementos que tienen los mismos sucesores 
+                direccion = sucesor[1]
+                hastaLlegar =  direcciones + [direccion]
+                coste = problem.getCostOfActions(hastaLlegar)
+                sucesores.push((sucesor[0], hastaLlegar), coste) # El error está en que cada vez
+    return None
 
 
 def nullHeuristic(state, problem=None):
