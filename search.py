@@ -290,8 +290,85 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    estadoIni = problem.getStartState()
+    sucesores = util.PriorityQueue()
+    setPosicionesVisitadas = set()
+    direcciones = []
+    posAct = estadoIni
 
+    # Igual que el UCS, lo único que he añadido los heurísticos al coste acumulado
+    # El heuristico se coste total estimado se calcula con esta fórmula --> heurístico + costeAcumulado
+
+    costeAcum = 0
+    coste = 0
+    heuristico = heuristic(posAct, problem)
+    costeTotal = costeAcum + heuristico
+
+    sucesores.push((posAct, [], costeAcum), costeTotal)
+
+    while not sucesores.isEmpty():
+        posAct, direcciones, costeAcum = sucesores.pop()
+
+        if problem.isGoalState(posAct):
+            return direcciones
+
+        if posAct not in setPosicionesVisitadas:
+            setPosicionesVisitadas.add(posAct)  
+
+            for sucesor in problem.getSuccessors(posAct):                
+                if sucesor[0] not in setPosicionesVisitadas:
+                    direccion = sucesor[1]
+                    hastaLlegar = direcciones + [direccion] 
+                    costeAcum =  problem.getCostOfActions(hastaLlegar)
+                    heuristico = heuristic(estadoSuc, problem)  
+                    costeTotal = costeAcum + heuristico 
+                    
+                    sucesores.push((estadoSuc, hastaLlegar, costeAcum), costeTotal)
+
+    # Si no encontramos una solución
+    return None
+
+# VERSIÓN 1
+
+"""def aStarSearch(problem, heuristic=nullHeuristic):
+    "*** YOUR CODE HERE ***"
+    estadoIni = problem.getStartState()
+    sucesores = util.PriorityQueue()
+    setPosicionesVisitadas = set()
+    direcciones = []
+    posAct = estadoIni
+
+    # Igual que el UCS, lo único que he añadido los heuristicos al coste acumulado
+
+    costeAcum = 0
+    coste = 0
+    heuristico = heuristic(posAct, problem)
+    costeTotal = costeAcum + heuristico
+
+    sucesores.push((posAct, [], costeAcum), costeTotal)
+
+    while not sucesores.isEmpty():
+        posAct, direcciones, costeAcum = sucesores.pop()
+
+        if problem.isGoalState(posAct):
+            return direcciones
+
+        if posAct not in setPosicionesVisitadas:
+            setPosicionesVisitadas.add(posAct)  
+
+            for sucesor in problem.getSuccessors(posAct):                
+                if sucesor[0] not in setPosicionesVisitadas:
+                    direccion = sucesor[1]
+                    hastaLlegar = direcciones + [direccion] 
+                    costeAcum =  problem.getCostOfActions(hastaLlegar)
+                    heuristico = heuristic(estadoSuc, problem)  
+                    costeTotal = sucesor[2] + heuristico 
+                    
+                    sucesores.push((estadoSuc, hastaLlegar, costeAcum), costeTotal)
+
+    # Si no encontramos una solución
+    return None
+"""
 
 # Abbreviations
 bfs = breadthFirstSearch
