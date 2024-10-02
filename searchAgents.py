@@ -313,6 +313,8 @@ class CornersProblem(search.SearchProblem):
             self.esquinasVis[2] = True
         elif self.startingPosition == self.corners[3]:
             self.esquinasVis[3] = True
+        
+        self.startState = (self.startingPosition, tuple(self.esquinasVis))
 
     def getStartState(self):
         """
@@ -320,7 +322,7 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        return self.startingPosition
+        return self.startState
 
     def isGoalState(self, state):
         """
@@ -328,7 +330,7 @@ class CornersProblem(search.SearchProblem):
         """
         "*** YOUR CODE HERE ***"
         
-        for esquinaVis in self.esquinasVis:
+        for esquinaVis in state[1]:
             if not esquinaVis:
                 return False
         
@@ -348,35 +350,36 @@ class CornersProblem(search.SearchProblem):
         """
 
         successors = []
+        posAct = state[0]
+        esquinasVis = list(state[1])
+
+        if not isinstance(posAct, tuple) or not isinstance(esquinasVis, (list, tuple)):
+            raise TypeError("El estado no tiene el formato correcto. Se espera (posAct, esquinasVis).")
+
+
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-            # Add a successor state to the successor list if the action is legal
-            # Here's a code snippet for figuring out whether a new position hits a wall:
-            currentPosition = state[0]
-            x,y = currentPosition
+            # state contiene --> Una tupla con la posición del pacman (x, y) y la lista de las esquinas visitadas
+            x, y = posAct
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
-            hitsWall = self.walls[nextx][nexty]
+            if not self.walls[nextx][nexty]:
+                nextState = (nextx, nexty)
+                nuevasEsquinasVis = list(esquinasVis)
+                if nextState ==self.corners[0]:
+                    nuevasEsquinasVis[0] = True
+                elif nextState ==self.corners[1]:
+                    nuevasEsquinasVis[1] = True
+                elif nextState ==self.corners[2]:
+                    nuevasEsquinasVis[2] = True
+                elif nextState ==self.corners[3]:
+                    nuevasEsquinasVis[3] = True
 
-            if not hitsWall:
-
-                nuevasEsquinasVis = list(self.esquinasVis)
-
-                sucesor = (nextx, nexty)
-
-                if sucesor == self.corners[0]:
-                    self.esquinasVis[0] = True
-                elif sucesor == self.corners[1]:
-                    self.esquinasVis[1] = True
-                elif sucesor == self.corners[2]:
-                    self.esquinasVis[2] = True
-                elif sucesor == self.corners[3]:
-                    self.esquinasVis[3] = True
-
-            "*** YOUR CODE HERE ***"
+                successors.append(((nextState, tuple(nuevasEsquinasVis)), action, 1))
 
         self._expanded += 1  # DO NOT CHANGE
-        return successors
+        return successors # Devuelve un array --> siguienteEstado, accion (norte,sur,este,oeste), coste
 
+            
         #### ESTÁ INCOMPLETO ####
 
     def getCostOfActions(self, actions):

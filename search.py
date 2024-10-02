@@ -320,10 +320,10 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                     direccion = sucesor[1]
                     hastaLlegar = direcciones + [direccion] 
                     costeAcum =  problem.getCostOfActions(hastaLlegar)
-                    heuristico = heuristic(estadoSuc, problem)  
+                    heuristico = heuristic(sucesor[0], problem)  
                     costeTotal = costeAcum + heuristico 
                     
-                    sucesores.push((estadoSuc, hastaLlegar, costeAcum), costeTotal)
+                    sucesores.push((sucesor[0], hastaLlegar, costeAcum), costeTotal)
 
     # Si no encontramos una solución
     return None
