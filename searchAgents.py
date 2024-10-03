@@ -281,6 +281,11 @@ def euclideanHeuristic(position, problem, info={}):
 #####################################################
 
 class CornersProblem(search.SearchProblem):
+
+    # SUBIR VERSIÓN 1
+    # Es necesario guardar en el estado las esquinas por las que pasa el pacman, sino no se sabe porque esquinas pasa
+    # Se han cambiado todos los métodos
+
     """
     This search problem finds paths through all four corners of a layout.
 
@@ -303,18 +308,24 @@ class CornersProblem(search.SearchProblem):
         # in initializing the problem
         "*** YOUR CODE HERE ***"
 
-        self.esquinasVis = [False, False, False, False]
+        esquinasVis = [False, False, False, False]
 
         if self.startingPosition == self.corners[0]:
-            self.esquinasVis[0] = True
+            esquinasVis[0] = True
         elif self.startingPosition == self.corners[1]:
-            self.esquinasVis[1] = True
+            esquinasVis[1] = True
         elif self.startingPosition == self.corners[2]:
-            self.esquinasVis[2] = True
+            esquinasVis[2] = True
         elif self.startingPosition == self.corners[3]:
-            self.esquinasVis[3] = True
+            esquinasVis[3] = True
         
+        self.startState = (self.startingPosition, tuple(esquinasVis))
+
+        #VERSIÓN 1
+        """Mismo código sin esta línea
         self.startState = (self.startingPosition, tuple(self.esquinasVis))
+        y con el self de esquinasVis"""
+
 
     def getStartState(self):
         """
@@ -323,6 +334,14 @@ class CornersProblem(search.SearchProblem):
         """
         "*** YOUR CODE HERE ***"
         return self.startState
+
+    # VERSIÓN 1 
+    """def getStartState(self):
+            No está bien porque para conocer el estado se necesita la posición inicial del pacman y el número de esquinas visitadas
+            Sino el pacman no conoce que esquinas se han visitado y no puede llegar al objetivo
+            return self.startingPosition
+    """
+
 
     def isGoalState(self, state):
         """
@@ -336,7 +355,10 @@ class CornersProblem(search.SearchProblem):
         
         return True
 
-        ### Se puede poner return all(self.esquinasVis)
+        ### Se puede poner return all(state[1])
+
+        # VERSIÓN 1
+        """Lo mismo pero for esquinaVis in self.esquinasVis"""
 
     def getSuccessors(self, state):
         """
@@ -352,10 +374,6 @@ class CornersProblem(search.SearchProblem):
         successors = []
         posAct = state[0]
         esquinasVis = list(state[1])
-
-        if not isinstance(posAct, tuple) or not isinstance(esquinasVis, (list, tuple)):
-            raise TypeError("El estado no tiene el formato correcto. Se espera (posAct, esquinasVis).")
-
 
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # state contiene --> Una tupla con la posición del pacman (x, y) y la lista de las esquinas visitadas
@@ -377,10 +395,9 @@ class CornersProblem(search.SearchProblem):
                 successors.append(((nextState, tuple(nuevasEsquinasVis)), action, 1))
 
         self._expanded += 1  # DO NOT CHANGE
-        return successors # Devuelve un array --> siguienteEstado, accion (norte,sur,este,oeste), coste
+        return successors # Devuelve un array --> siguienteEstado, esquinasVisitadas accion (norte,sur,este,oeste), coste
 
-            
-        #### ESTÁ INCOMPLETO ####
+        """Lo mismo pero con self.esquinasVis en vez de state[1]"""
 
     def getCostOfActions(self, actions):
         """
