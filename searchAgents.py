@@ -430,8 +430,33 @@ def cornersHeuristic(state, problem):
     walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0  # Default to trivial solution
+    
+    posAgente, esquinasVis = state
+    
+    esquinasNoVis = []
+    for esquina in corners:
+        if esquina not in esquinasVis:
+            esquinasNoVis.append(esquina)
 
+    heuristico = 0
+    posAct = posAgente
+
+    for esquina in esquinasNoVis:
+        distancias = {} 
+        for esquina in esquinasNoVis:
+            distancias[esquina] = abs(posAct[0] - esquina[0]) + abs(posAct[1] - esquina[1])
+        
+        esquina_cercana = min(distancias, key=distancias.get)
+        distancia_minima = distancias[esquina_cercana]
+        
+        heuristico += distancia_minima
+        
+        posAct = esquina_cercana
+        
+        esquinasNoVis.remove(esquina_cercana)
+        
+    return heuristico
+    
 
 class AStarCornersAgent(SearchAgent):
     """A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"""
