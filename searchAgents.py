@@ -434,19 +434,20 @@ def cornersHeuristic(state, problem):
     posAgente, esquinasVis = state
     
     esquinasNoVis = []
-    for esquina in corners:
+    for esquina in corners: # Genera una lista con las esquinas no visitadas
         if esquina not in esquinasVis:
             esquinasNoVis.append(esquina)
 
     heuristico = 0
     posAct = posAgente
 
-    if esquinasNoVis.isEmpty:
+    if esquinasNoVis.isEmpty: #Si ya se han visitado todas las esquinas, se ha alcanzado el objetivo
         return 0
 
     for esquina in esquinasNoVis:
-        distancias = {} 
-        for esquina in esquinasNoVis:
+        distancias = {} # Tenemos un diccionario que guarda todas las distancias
+        for esquina in esquinasNoVis: # Hay que recalcular las distancias, dado que, la posición del agente va cambiando
+            # La posición actual en cada caso será las esquina más cercana
             distancias[esquina] = abs(posAct[0] - esquina[0]) + abs(posAct[1] - esquina[1])
         
         esquina_cercana = min(distancias, key=distancias.get)
@@ -456,7 +457,7 @@ def cornersHeuristic(state, problem):
         
         posAct = esquina_cercana
         
-        esquinasNoVis.remove(esquina_cercana)
+        esquinasNoVis.remove(esquina_cercana) # Lo elimina porque se supone que el pacman va a alcanzar esa esquina
         
     return heuristico
     
