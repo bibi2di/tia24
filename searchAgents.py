@@ -430,6 +430,7 @@ def cornersHeuristic(state, problem):
     walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
+    
     return 0  # Default to trivial solution
 
 
@@ -533,7 +534,23 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    listaHeur = [0]
+    estado_ini = problem.startingGameState
+    #guardamos la información de la comida como una lista
+    comida_coord = foodGrid.asList()
+
+    if not comida_coord:
+        return 0
+
+    #para cada punto de comida dentro de las coordenadas
+    for comida in comida_coord:
+        #calculamos la distancia entre la posicion (estado), la comida y el estado inicial
+        distancia = mazeDistance(position, comida, estado_ini)
+        #añadimos a la lista la distancia.
+        listaHeur.append(distancia)
+    
+    max_heur = max(listaHeur)
+    return max_heur
 
 
 class ClosestDotSearchAgent(SearchAgent):
@@ -570,6 +587,7 @@ class ClosestDotSearchAgent(SearchAgent):
         # util.raiseNotDefined()
 
 
+
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
     A search problem for finding a path to any food.
@@ -589,7 +607,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         """Stores information from the gameState.  You don't need to change this."""
         # Store the food for later reference
         super().__init__(gameState)
-        self.food = gameState.getFood() #Contiene una matriz de boolean que indica en que posiciones hay comida
+        self.food = gameState.getFood()
 
         # Store info for the PositionSearchProblem (no need to change this)
         self.walls = gameState.getWalls()
