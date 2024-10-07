@@ -426,12 +426,64 @@ def cornersHeuristic(state, problem):
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
     """
-    corners = problem.corners  # These are the corner coordinates
-    walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
-    "*** YOUR CODE HERE ***"
+    corners = problem.corners  # These are the corner coordinates
+    walls = problem.walls  # These are the walls of the maze, as a Grid
+
+    posAgente = state[0]
+
+    # List of unvisited corners and boolean of visited
+    esquinasNoVis = []
+    esquinasVis = list(state[1])
+
+    # distances
+    distancias = {}
+    heuristico = 0
+
+    # rellenamos lista de esquinas no visitadas:
+    for i in range(len(corners)):
+        if not esquinasVis[i]:
+            esquinasNoVis.append(corners[i])
+
+    if not esquinasNoVis:
+        return 0  # If all corners are visited, return 0
+    # Manhattan distance function
+    def manhattan(p1, p2):
+        return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
     
-    posAgente, esquinasVis = state
+    #distancias de la posición a todas las esquinas
+    for esquina in esquinasNoVis:
+        distancia = manhattan(posAgente, esquina)
+        distancias[esquina] = distancia
+
+    #esquina más cercana:
+    esquina_mas_cercana = min(distancias, key=distancias.get)
+    heuristico += distancias[esquina_mas_cercana]
+    
+    #sacamos la esquina de las no visitadas:
+    act = esquina_mas_cercana
+    esquinasNoVis.remove(act)
+    posicion = corners.index(act)
+    esquinasVis[posicion] = True
+
+    while esquinasNoVis:
+        distanciasEsqActual = {}
+
+        for esquina in esquinasNoVis:
+            distanciasEsqActual[esquina] = manhattan(act, esquina)
+
+        siguiente_esquina = min(distanciasEsqActual, key=distanciasEsqActual.get) 
+        heuristico += distanciasEsqActual[siguiente_esquina] 
+
+        act = siguiente_esquina
+        esquinasNoVis.remove(siguiente_esquina)
+        posicion = corners.index(siguiente_esquina)
+        esquinasVis[posicion] = True  
+    
+    return(heuristico)
+
+"""V1 - heurístico Corner:
+ posAgente, esquinasVis = state
     
     esquinasNoVis = []
     for esquina in corners: # Genera una lista con las esquinas no visitadas
@@ -459,8 +511,8 @@ def cornersHeuristic(state, problem):
         
         esquinasNoVis.remove(esquina_cercana) # Lo elimina porque se supone que el pacman va a alcanzar esa esquina
         
-    return heuristico
-    
+    return heuristico"""
+
 
 class AStarCornersAgent(SearchAgent):
     """A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"""
@@ -562,7 +614,23 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    listaHeur = [0]
+    estado_ini = problem.startingGameState
+    #guardamos la información de la comida como una lista
+    comida_coord = foodGrid.asList()
+
+    if not comida_coord:
+        return 0
+
+    #para cada punto de comida dentro de las coordenadas
+    for comida in comida_coord:
+        #calculamos la distancia entre la posicion (estado), la comida y el estado inicial
+        distancia = mazeDistance(position, comida, estado_ini)
+        #añadimos a la lista la distancia.
+        listaHeur.append(distancia)
+    
+    max_heur = max(listaHeur)
+    return max_heur
 
 
 class ClosestDotSearchAgent(SearchAgent):
