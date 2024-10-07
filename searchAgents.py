@@ -441,6 +441,9 @@ def cornersHeuristic(state, problem):
     heuristico = 0
     posAct = posAgente
 
+    if esquinasNoVis.isEmpty:
+        return 0
+
     for esquina in esquinasNoVis:
         distancias = {} 
         for esquina in esquinasNoVis:
@@ -449,7 +452,7 @@ def cornersHeuristic(state, problem):
         esquina_cercana = min(distancias, key=distancias.get)
         distancia_minima = distancias[esquina_cercana]
         
-        heuristico += distancia_minima
+        heuristico = heuristico + distancia_minima
         
         posAct = esquina_cercana
         
