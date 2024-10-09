@@ -614,23 +614,50 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    listaHeur = [0]
+    #listaHeur = [0]
     estado_ini = problem.startingGameState
     #guardamos la información de la comida como una lista
     comida_coord = foodGrid.asList()
 
     if not comida_coord:
         return 0
+    
+    if 'distancias' not in problem.heuristicInfo:
+        problem.heuristicInfo['distancias'] = {}
+
+    max_dist = 0
+
+    priorQueue = util.PriorityQueue()
 
     #para cada punto de comida dentro de las coordenadas
     for comida in comida_coord:
+        if (position, comida) not in problem.heuristicInfo['distancias']:
         #calculamos la distancia entre la posicion (estado), la comida y el estado inicial
-        distancia = mazeDistance(position, comida, estado_ini)
+            distancia = mazeDistance(position, comida, estado_ini)
+            problem.heuristicInfo['distancias'][(position, comida)] = distancia
+        else:
+            distancia = problem.heuristicInfo['distancias'][(position, comida)]
         #añadimos a la lista la distancia.
+        priorQueue.push(comida, -distancia)
+    
+    comida_mas_lejana= priorQueue.pop()
+    max_dist = problem.heuristicInfo['distancias'][(position, comida_mas_lejana)]
+    return max_dist
+    """codigo V1 
+    comida_coord = foodGrid.asList()
+
+    if not comida_coord:
+        return 0
+    listaHeur = [0]
+
+    # manhattan desde posicion actual hasta cada comida.
+    for comida in comida_coord:
+        distancia = abs(position[0] - comida[0]) + abs(position[1] - comida[1])
         listaHeur.append(distancia)
     
+    # la mayor de estas distancias:
     max_heur = max(listaHeur)
-    return max_heur
+    return max_heur"""
 
 
 class ClosestDotSearchAgent(SearchAgent):
