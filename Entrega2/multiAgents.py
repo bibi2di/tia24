@@ -117,48 +117,115 @@ class ReflexAgent(Agent):
         return score
         #return successorGameState.getScore()#Tendr�is que comentar esta linea y devolver el valor que calculeis"""
 
-        score = 0
-        infoFantasmas = []  
+        """score = 0
 
-        for i, ghostState in enumerate(newGhostStates):
-            posFantasma = ghostState.getPosition()
-            distanciaAct = manhattanDistance(newPos, posFantasma)
-            
-            infoFantasmas.append({
-                'fantasma': i + 1,  # Identificador del fantasma
-                'distancia': distanciaAct,  # Distancia a Pac-Man
-                'asustado': newScaredTimes[i] != 0  # Si el fantasma está asustado
-            })
+        if successorGameState.isWin():
+            puntuacion = 1000000
+        
+        else:
+            infoFantasmas = []  
 
-        distanciaComida = 0
-        anchura = newFood.width  
-        altura = newFood.height 
+            for i, ghostState in enumerate(newGhostStates):
+                posFantasma = ghostState.getPosition()
+                distanciaAct = manhattanDistance(newPos, posFantasma)
+                
+                infoFantasmas.append({
+                    'fantasma': i + 1,  # Identificador del fantasma
+                    'distancia': distanciaAct,  # Distancia a Pac-Man
+                    'asustado': newScaredTimes[i] != 0  # Si el fantasma está asustado
+                })
 
-        for x in range(anchura):
-            for y in range(altura):
-                if newFood[x][y]:  
-                    posComida =tuple((x, y))
-                    distanciaAct = manhattanDistance(newPos, posComida)
-                    distanciaComida += distanciaAct
 
-        for fantasma in infoFantasmas:
-            distancia = fantasma['distancia']
-            if fantasma['asustado']:
-                if distancia == 0:
-                    score += 1000
-                else:  
-                    score += (1 / (distancia + 1)) * 2  
-            else:
-                if distancia == 0:
-                    score -= 1000
+            distanciaComida = float('inf')
+            distanciaCrit = 5
+            anchura = newFood.width  
+            altura = newFood.height 
+
+            for x in range(anchura):
+                for y in range(altura):
+                    if newFood[x][y]:  
+                        posComida =tuple((x, y))
+                        distanciaAct = manhattanDistance(newPos, posComida)
+                        distanciaComida += distanciaAct
+
+            numComidas = sum(sum(row) for row in newFood)
+
+            for fantasma in infoFantasmas:
+                distancia = fantasma['distancia']
+                if fantasma['asustado']:
+                    if distancia == 0:
+                        score += 100000
+                        print ("Score: ", score)
+                        print ("Me he metido en el if 1")
+                    else:  
+                        score += (1 / (distancia + 1)) * 2  
+                        print ("Score: ", score)
+                        print ("Me he metido en el if 2")
                 else:
-                    score -= (1 / (distancia + 1)) * 2  # Penalización por la distancia a un fantasma no asustado
+                    if distancia == 0:
+                        score -= 100000
+                        print ("Score: ", score)
+                        print ("Me he metido en el if 3")
+                    else:
+                        score -= (1 / (distancia + 1)) * 2  # Penalización por la distancia a un fantasma no asustado
+                        print ("Score: ", score)
+                        print ("Me he metido en el if 4")
+                if not fantasma['asustado'] and distancia < distanciaCrit:
+                    score += 1000 / (distanciaComida + 1)*numComidas  # Mayor puntuación cuanto más cerca esté la comida
+                    print ("Score: ", score)
+                    print ("Me he metido en el if 5")
 
-        numComidas = sum(sum(row) for row in newFood)
 
-        score += (1 / (distanciaComida + 1))*numComidas  # Puntuación por la distancia total a la comida
+            # Bonificación extra por menos comida restante
+            score += (1 / (numComidas + 1)) * 1000  # Bonificación cuanto menos comida queda
+            print ("Score final: ", score)
 
-        return score  # Devuelve la puntuación calculada
+        return score  # Devuelve la puntuación calculada"""
+
+        score = 0
+        scoreSucesor = successorGameState.getScore()
+
+        if successorGameState.isWin():
+            puntuacion = float('inf')
+        else:
+            distComida = []
+            distFant = []
+            distComidaCerc = float('inf')
+            distFantCerc = float('inf')
+            fantAct = None
+            distanciaCrit = 2
+            listaCom = newFood.asList() 
+
+            for ghostState in newGhostStates:
+                posFantasma = ghostState.getPosition()
+                distanciaFAct = manhattanDistance(newPos, posFantasma)
+                distFant.append(distanciaFAct)
+                if distanciaFAct < distFantCerc:
+                    distFantCerc = distanciaFAct
+                    fantAct = ghostState
+            
+            anchura = newFood.width  
+            altura = newFood.height 
+            for x in range (anchura):
+                for y in range (altura):
+                    if newFood[x][y]:
+                        posAct = (x,y)
+                        distanciaCAct = manhattanDistance(newPos, posAct)
+                        distComida.append(distanciaCAct)
+                        if distanciaCAct < distComidaCerc:
+                            distComidaCerc = distanciaCAct
+            
+        
+            if distFantCerc < distanciaCrit and ghostState.scaredTimer == 0:
+                score =-float('inf')  
+            
+            numComidasRestantes = len(listaCom)  
+
+            score -= numComidasRestantes * 10000  
+
+            score += scoreSucesor + (1 / (distComidaCerc + 1))
+
+        return score
 
 
 def scoreEvaluationFunction(currentGameState):
