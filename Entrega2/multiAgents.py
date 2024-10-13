@@ -69,15 +69,96 @@ class ReflexAgent(Agent):
 
         # Useful information you can extract from a GameState (pacman.py)
         successorGameState = currentGameState.generatePacmanSuccessor(action)
-        newPos = successorGameState.getPacmanPosition()
-        newFood = successorGameState.getFood()
-        newGhostStates = successorGameState.getGhostStates()
-        newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+        newPos = successorGameState.getPacmanPosition() #Posici贸n del pacman
+        newFood = successorGameState.getFood() #Matriz de booleanos comida
+        newGhostStates = successorGameState.getGhostStates() #Posici贸n fantasma y a donde se mueve
+        newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates] # Tiempo que el fantasma est谩 asustado
+
 
         "*** YOUR CODE HERE ***"
 
+        """score = 0
+        i = 1
+        infoFantasmas = {}
+        for ghostState in newGhostStates:
+            posFantasma = ghostState.getPosition()
+            distanciaAct = manhattanDistance(newPos, posFantasma)
+            infoFantasmas['fantasma'] = i
+            infoFantasmas['distancia'] = distanciaAct
+            tiempoAsustado = newScaredTimes[i-1]
+            infoFantasmas['asustado'] = tiempoAsustado != 0
+            i = i+1
 
-        return successorGameState.getScore()#Tendr閕s que comentar esta linea y devolver el valor que calculeis
+        distanciaComida = 0
+
+        anchura = newFood.width  # Ancho (n煤mero de columnas)
+        altura = newFood.height  # Alto (n煤mero de filas)
+
+        for x in range (anchura):
+            for y in range (altura):
+                if newFood[x][y]:
+                    posComida = tuple((x,y))
+                    distanciaAct = manhattanDistance(newPos, posComida)
+                    distanciaComida += distanciaAct
+
+        
+        distancia = infoFantasmas['distancia']
+        
+        if distancia == 0:
+            score -= 1000  
+        elif infoFantasmas['asustado']:
+            score += (1 / (distancia + 1)) * 2  
+        else:
+            score -= (1 / (distancia + 1)) * 2 
+
+        score += (1/(distanciaComida+1))
+        print("Score: ", score)
+        
+        return score
+        #return successorGameState.getScore()#Tendr锟絠s que comentar esta linea y devolver el valor que calculeis"""
+
+        score = 0
+        infoFantasmas = []  
+
+        for i, ghostState in enumerate(newGhostStates):
+            posFantasma = ghostState.getPosition()
+            distanciaAct = manhattanDistance(newPos, posFantasma)
+            
+            infoFantasmas.append({
+                'fantasma': i + 1,  # Identificador del fantasma
+                'distancia': distanciaAct,  # Distancia a Pac-Man
+                'asustado': newScaredTimes[i] != 0  # Si el fantasma est谩 asustado
+            })
+
+        distanciaComida = 0
+        anchura = newFood.width  
+        altura = newFood.height 
+
+        for x in range(anchura):
+            for y in range(altura):
+                if newFood[x][y]:  
+                    posComida =tuple((x, y))
+                    distanciaAct = manhattanDistance(newPos, posComida)
+                    distanciaComida += distanciaAct
+
+        for fantasma in infoFantasmas:
+            distancia = fantasma['distancia']
+            if fantasma['asustado']:
+                if distancia == 0:
+                    score += 1000
+                else:  
+                    score += (1 / (distancia + 1)) * 2  
+            else:
+                if distancia == 0:
+                    score -= 1000
+                else:
+                    score -= (1 / (distancia + 1)) * 2  # Penalizaci贸n por la distancia a un fantasma no asustado
+
+        numComidas = sum(sum(row) for row in newFood)
+
+        score += (1 / (distanciaComida + 1))*numComidas  # Puntuaci贸n por la distancia total a la comida
+
+        return score  # Devuelve la puntuaci贸n calculada
 
 
 def scoreEvaluationFunction(currentGameState):
