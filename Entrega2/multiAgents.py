@@ -290,7 +290,56 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        numAgentes = game_state.getNumAgents()
+        numFantasmas = numAgentes -1
+        profundidad = self.depth
+        profAct = 1
+        accionAct = None
+        mejorAccion = None
+        valorAct = self.evaluationFunction
+        valor = -float('inf')
+        agenteAct = 0
+        if game_state.isWin() or game_state.isLose() or profAct == profundidad:
+            return accionAct
+        else:
+            if agenteAct == 0:
+                valor, accionAct = self.max_value(game_state)
+                agenteAct = 1
+            else:
+                valor, accionAct = self.min_value(game_state,agenteAct)
+                agenteAct += 1
+                if agenteAct > numFantasmas:
+                    agenteAct = 0
+                    profAct += 1
+            return accionAct
+        #util.raiseNotDefined()
+
+    
+    def max_value(self, game_state):
+        mejorValor = -float('inf')
+        mejorAccion = 'Stop'
+        acciones = game_state.getLegalActions(0)
+        for accion in acciones:
+            sucesor = game_state.generateSuccessor(0, accion)
+            valorN, accionAct = max(mejorValor, self.getAction(sucesor))
+            if valorN > mejorValor:
+                mejorValor = valorN
+                mejorAccion = accionAct
+        return mejorValor, mejorAccion
+
+    def min_value(self, game_state, agentIndex):
+        mejorValor = float('inf')
+        mejorAccion = 'Stop'
+        acciones = game_state.getLegalActions(agentIndex)
+        for accion in acciones:
+            sucesor = game_state.generateSuccessor(agentIndex, accion)
+            valorN, accionAct = min(mejorValor, self.getAction(sucesor))
+            if valorN < mejorValor:
+                mejorValor = valorN
+                mejorAccion = accionAct
+        return mejorValor, mejorAccion
+
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
