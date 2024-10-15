@@ -265,80 +265,115 @@ class MinimaxAgent(MultiAgentSearchAgent):
     """
     Your minimax agent (question 2)
     """
-
+    #INTENTO 2
+    """
     def getAction(self, game_state):
-        """
-        Returns the minimax action from the current gameState using self.depth
-        and self.evaluationFunction.
-
-        Here are some method calls that might be useful when implementing minimax.
-
-        gameState.getLegalActions(agentIndex):
-        Returns a list of legal actions for an agent
-        agentIndex=0 means Pacman, ghosts are >= 1
-
-        gameState.generateSuccessor(agentIndex, action):
-        Returns the successor game state after an agent takes an action
-
-        gameState.getNumAgents():
-        Returns the total number of agents in the game
-
-        gameState.isWin():
-        Returns whether or not the game state is a winning state
-
-        gameState.isLose():
-        Returns whether or not the game state is a losing state
-        """
         "*** YOUR CODE HERE ***"
 
-        numAgentes = game_state.getNumAgents()
-        numFantasmas = numAgentes -1
+        agentIndex = 0
         profundidad = self.depth
-        profAct = 1
-        accionAct = None
-        mejorAccion = None
-        valorAct = self.evaluationFunction
-        valor = -float('inf')
-        agenteAct = 0
-        if game_state.isWin() or game_state.isLose() or profAct == profundidad:
-            return accionAct
-        else:
-            if agenteAct == 0:
-                valor, accionAct = self.max_value(game_state)
-                agenteAct = 1
-            else:
-                valor, accionAct = self.min_value(game_state,agenteAct)
-                agenteAct += 1
-                if agenteAct > numFantasmas:
-                    agenteAct = 0
-                    profAct += 1
-            return accionAct
+        accion = self.value(game_state, agentIndex, profundidad)[1] #[1] devuelve la action
+        return accion
         #util.raiseNotDefined()
-
     
-    def max_value(self, game_state):
+    def value(self, game_state, agentIndex, profundidad):
+        if game_state.isWin() or game_state.isLose() or profundidad == 0:
+            return (self.evaluationFunction(game_state), "Stop") 
+        elif agentIndex == 0:
+            return self.max_value(game_state, agentIndex, profundidad)
+        else:
+            return self.min_value(game_state, agentIndex, profundidad)
+    
+    def max_value(self, game_state, agentIndex, profundidad):
         mejorValor = -float('inf')
         mejorAccion = 'Stop'
         acciones = game_state.getLegalActions(0)
+        profundidad += 1
         for accion in acciones:
             sucesor = game_state.generateSuccessor(0, accion)
-            valorN, accionAct = max(mejorValor, self.getAction(sucesor))
+            valorN, accionAct = max(mejorValor, self.value(game_state, agentIndex+1, profundidad))
             if valorN > mejorValor:
                 mejorValor = valorN
                 mejorAccion = accionAct
         return mejorValor, mejorAccion
 
-    def min_value(self, game_state, agentIndex):
+    def min_value(self, game_state, agentIndex, profundidad):
         mejorValor = float('inf')
         mejorAccion = 'Stop'
+        numAgentes = game_state.getNumAgents()
+        numFantasmas = numAgentes -1
         acciones = game_state.getLegalActions(agentIndex)
+        profundidad += 1
+        if agentIndex == numFantasmas:
+            profundidad -= 1
+            agentIndex = -1
         for accion in acciones:
-            sucesor = game_state.generateSuccessor(agentIndex, accion)
-            valorN, accionAct = min(mejorValor, self.getAction(sucesor))
+            sucesor = game_state.generateSuccessor(agentIndex+1, accion)
+            valorN, accionAct = min(mejorValor, self.value(game_state, agentIndex+1, profundidad))
             if valorN < mejorValor:
                 mejorValor = valorN
                 mejorAccion = accionAct
         return mejorValor, mejorAccion
+    """
+
+    def getAction(self, game_state):
+        """
+        Returns the minimax action from the current gameState using self.depth
+        and self.evaluationFunction.
+        """
+        agentIndex = 0
+        profundidad = self.depth
+        valor,accion = self.value(game_state, agentIndex, profundidad)  
+        return accion
+
+    def value(self, game_state, agentIndex, profundidad):
+        if game_state.isWin() or game_state.isLose() or profundidad == 0:
+            return (self.evaluationFunction(game_state), "Stop")
+        elif agentIndex == 0:
+            return self.max_value(game_state, agentIndex, profundidad)
+        else:
+            return self.min_value(game_state, agentIndex, profundidad)
+
+    def max_value(self, game_state, agentIndex, profundidad):
+        mejorValor = -float('inf')
+        mejorAccion = 'Stop'
+        acciones = game_state.getLegalActions(agentIndex)
+        nextAgent, nextDepth = self.actualizarPorfAgent(game_state, agentIndex, profundidad)
+
+        for accion in acciones:
+            sucesor = game_state.generateSuccessor(agentIndex, accion)
+            valorN, _ = self.value(sucesor, nextAgent, nextDepth)
+            if valorN > mejorValor:
+                mejorValor = valorN
+                mejorAccion = accion
+
+        return mejorValor, mejorAccion
+
+    def min_value(self, game_state, agentIndex, profundidad):
+        mejorValor = float('inf')
+        mejorAccion = 'Stop'
+        acciones = game_state.getLegalActions(agentIndex)
+        nextAgent, nextDepth = self.actualizarPorfAgent(game_state, agentIndex, profundidad)
+        for accion in acciones:
+            sucesor = game_state.generateSuccessor(agentIndex, accion)
+            valorN, _ = self.value(sucesor, nextAgent, nextDepth)
+            if valorN < mejorValor:
+                mejorValor = valorN
+                mejorAccion = accion
+
+        return mejorValor, mejorAccion
+
+    def actualizarPorfAgent(self, game_state, agentIndex, profundidad):
+        numAgentes = game_state.getNumAgents()  
+        numMaxIndex = numAgentes - 1            
+
+        if agentIndex == numMaxIndex:           
+            agentIndex = 0                     
+            profundidad -= 1                    
+        else:
+            agentIndex += 1                     
+        
+        return agentIndex, profundidad
 
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
