@@ -323,7 +323,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         """
         agentIndex = 0
         profundidad = self.depth
-        valor,accion = self.value(game_state, agentIndex, profundidad)  
+        _ ,accion = self.value(game_state, agentIndex, profundidad)  
         return accion
 
     def value(self, game_state, agentIndex, profundidad):
@@ -390,7 +390,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         profundidad = self.depth
         alpha = -float('inf')
         beta = float('inf')
-        valor,accion = self.value(game_state, agentIndex, profundidad, alpha, beta)  
+        _ ,accion = self.value(game_state, agentIndex, profundidad, alpha, beta)  
         return accion
 
     def value(self, game_state, agentIndex, profundidad, alpha, beta):
