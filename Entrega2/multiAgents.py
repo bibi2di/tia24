@@ -386,7 +386,68 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        agentIndex = 0
+        profundidad = self.depth
+        alpha = -float('inf')
+        beta = float('inf')
+        valor,accion = self.value(game_state, agentIndex, profundidad, alpha, beta)  
+        return accion
+
+    def value(self, game_state, agentIndex, profundidad, alpha, beta):
+        if game_state.isWin() or game_state.isLose() or profundidad == 0:
+            return (self.evaluationFunction(game_state), "Stop")
+        elif agentIndex == 0:
+            return self.max_value(game_state, agentIndex, profundidad, alpha, beta)
+        else:
+            return self.min_value(game_state, agentIndex, profundidad, alpha, beta)
+    
+    def max_value(self, game_state, agentIndex, profundidad, alpha, beta):
+        mejorValor = -float('inf')
+        mejorAccion = 'Stop'
+        acciones = game_state.getLegalActions(agentIndex)
+        nextAgent, nextDepth = self.actualizarPorfAgent(game_state, agentIndex, profundidad)
+
+        for accion in acciones:
+            sucesor = game_state.generateSuccessor(agentIndex, accion)
+            valorN, _ = self.value(sucesor, nextAgent, nextDepth, alpha, beta)
+            if valorN > mejorValor:
+                mejorValor = valorN
+                mejorAccion = accion
+            if valorN > beta:
+                return valorN, accion
+            if valorN > alpha:
+                alpha = valorN
+        return mejorValor, mejorAccion
+    
+    def min_value(self, game_state, agentIndex, profundidad, alpha, beta):
+        mejorValor = float('inf')
+        mejorAccion = 'Stop'
+        acciones = game_state.getLegalActions(agentIndex)
+        nextAgent, nextDepth = self.actualizarPorfAgent(game_state, agentIndex, profundidad)
+        for accion in acciones:
+            sucesor = game_state.generateSuccessor(agentIndex, accion)
+            valorN, _ = self.value(sucesor, nextAgent, nextDepth, alpha, beta)
+            if valorN < mejorValor:
+                mejorValor = valorN
+                mejorAccion = accion
+            if valorN < alpha:
+                return valorN, accion
+            if valorN < beta:
+                beta = valorN
+        return mejorValor, mejorAccion
+    
+    def actualizarPorfAgent(self, game_state, agentIndex, profundidad):
+        numAgentes = game_state.getNumAgents()  
+        numMaxIndex = numAgentes - 1            
+
+        if agentIndex == numMaxIndex:           
+            agentIndex = 0                     
+            profundidad -= 1                    
+        else:
+            agentIndex += 1                     
+        
+        return agentIndex, profundidad
+
 
 
 
