@@ -464,7 +464,70 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        agentIndex = 0
+        profundidad = self.depth
+        _ ,accion = self.value(gameState, agentIndex, profundidad) 
+        return accion
+    
+    def value(self, game_state, agentIndex, profundidad):
+        if game_state.isWin() or game_state.isLose() or profundidad == 0:
+            return (self.evaluationFunction(game_state), "Stop")
+        elif agentIndex == 0:
+            return self.max_value(game_state, agentIndex, profundidad)
+        else:
+            return self.exp_value(game_state, agentIndex, profundidad)
+    
+    def max_value(self, game_state, agentIndex, profundidad):
+        mejorValor = -float('inf')
+        mejorAccion = 'Stop'
+        acciones = game_state.getLegalActions(agentIndex)
+        nextAgent, nextDepth = self.actualizarPorfAgent(game_state, agentIndex, profundidad)
+
+        for accion in acciones:
+            sucesor = game_state.generateSuccessor(agentIndex, accion)
+            valorN, _ = self.value(sucesor, nextAgent, nextDepth)
+            if valorN > mejorValor:
+                mejorValor = valorN
+                mejorAccion = accion
+
+        return mejorValor, mejorAccion
+    
+    def exp_value(self, game_state, agentIndex, profundidad):
+        mejorValor = 0
+        mejorAccion = 'Stop'
+        acciones = game_state.getLegalActions(agentIndex)
+        nextAgent, nextDepth = self.actualizarPorfAgent(game_state, agentIndex, profundidad)
+
+        if len(acciones) == 0:
+            return mejorValor, mejorAccion
+        
+        prob = 1.0 / len(acciones)
+
+        for accion in acciones:
+            sucesor = game_state.generateSuccessor(agentIndex, accion)
+            valorN, _ = self.value(sucesor, nextAgent, nextDepth)
+            mejorValor += prob * valorN
+            
+
+        return mejorValor, mejorAccion
+    
+    def actualizarPorfAgent(self, game_state, agentIndex, profundidad):
+        numAgentes = game_state.getNumAgents()  
+        numMaxIndex = numAgentes - 1            
+
+        if agentIndex == numMaxIndex:           
+            agentIndex = 0                     
+            profundidad -= 1                    
+        else:
+            agentIndex += 1                     
+        
+        return agentIndex, profundidad
+
+        
+
+
+
+
 
 
 def betterEvaluationFunction(currentGameState):
