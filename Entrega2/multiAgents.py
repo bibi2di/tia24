@@ -535,7 +535,7 @@ def betterEvaluationFunction(currentGameState):
     Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
     evaluation function (question 5).
 
-    DESCRIPTION: <write something here so we know what you did>
+    DESCRIPTION: 
     """
     pacman_pos = currentGameState.getPacmanPosition()
     newFood = currentGameState.getFood()
@@ -543,7 +543,144 @@ def betterEvaluationFunction(currentGameState):
     newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    """lDist_comida = []
+    lComidas = newFood.asList()
+    lDist_pellet = []
+    pellets = currentGameState.getCapsules()
+    score = currentGameState.getScore()
+    comida_res = len(lComidas)
+    comidaCercana = 1
+    fantasmaCercano = 1
+    pelletCercano = 1
+
+
+    if currentGameState.isWin():
+        score = float('inf')
+
+    if currentGameState.isLose():
+        score = float('-inf')
+    
+    #Comida cerca ++ :
+
+    if len(lComidas) > 0:
+        for comida in lComidas:
+            distanciaC = util.manhattanDistance(pacman_pos, comida)
+            lDist_comida.append(distanciaC)
+        comidaCercana = min(lDist_comida)
+
+    score += 10.0 / (comidaCercana+1)
+    score -= 2 * len(lComidas)
+
+    #Fantasmas lejos ++:
+
+    if len(newGhostStates) > 0:
+        for fantasma in newGhostStates:
+            distanciaF = util.manhattanDistance(pacman_pos, fantasma.getPosition())
+
+            if distanciaF < 9999:
+                fantasmaCercano = distanciaF
+                fantasmaE = fantasma
+
+    if fantasmaE.scaredTimer > 0:
+        if distanciaF <= 1:
+            score += 100
+        else:
+            score += 100 / (distanciaF + 1)
+    else:
+        if distanciaF <= 1:
+            score -= 500
+        elif distanciaF <= 3:
+            score -= 300
+        else:
+            score -= 10.0 / distanciaF
+            
+                
+
+    #Pellets activos y fantasma cerca ++:
+    if len(pellets) > 0:
+        for pellet in pellets:
+            distanciaP = util.manhattanDistance(pacman_pos, pellet)
+            lDist_pellet.append(distanciaP)
+        pelletCercano = min(lDist_pellet)
+
+    fantasmaP = any(util.manhattanDistance(pacman_pos, fantasmaE.getPosition()) < 5
+                    for fantasma in newGhostStates if fantasma.scaredTimer == 0)
+    if fantasmaP:
+        score += 50.0 / (pelletCercano + 1)
+    else:
+        score += 20 / (pelletCercano + 1)
+
+    return score
+    """
+
+    lComidas = newFood.asList()
+    lDist_pellet = []
+    lDist_comida = []
+    pellets = currentGameState.getCapsules()
+    score = currentGameState.getScore()
+    comida_res = len(lComidas)
+    comidaCercana = 1
+    fantasmaCercano = 1
+    pelletCercano = 1
+
+
+    if currentGameState.isWin():
+        score = float('inf')
+
+    if currentGameState.isLose():
+        score = float('-inf')
+    
+    #Comida cerca ++ :
+
+    if len(lComidas) > 0:
+        for comida in lComidas:
+            distanciaC = util.manhattanDistance(pacman_pos, comida)
+            lDist_comida.append(distanciaC)
+        comidaCercana = min(lDist_comida)
+
+    # Fantasma lejos ++:
+    if len(newGhostStates) > 0:
+        for fantasma in newGhostStates:
+            distanciaF = util.manhattanDistance(pacman_pos, fantasma.getPosition())
+
+            if distanciaF < 9999:
+                fantasmaCercano = distanciaF
+                fantasmaE = fantasma
+
+    #Pellet cerca +:
+    if len(pellets) > 0:
+        for pellet in pellets:
+            distanciaP = util.manhattanDistance(pacman_pos, pellet)
+            lDist_pellet.append(distanciaP)
+        pelletCercano = min(lDist_pellet)
+    #Score:
+    
+    # La puntuacion sube con la cercanía de la comida y desciende con la del fantasma
+    score += ((1/comidaCercana) * fantasmaCercano)
+
+    # Si hay un fantasma cercano no asustado, desciende
+    if fantasmaCercano < 2 and fantasmaE.scaredTimer == 0:
+        score = score - 9999
+
+    # Si hay un fantasma cercano asustado, asciende:
+    if fantasmaCercano < 2 and fantasmaE.scaredTimer != 0:
+        score = score + (fantasmaCercano * 2)
+
+    # El tiempo asustado del fantasma asciende:
+    for tAsust in newScaredTimes:
+        score = score + tAsust
+
+    # Cuanta menos comida quede mejor
+    if comida_res != 0:
+        score = score + (1/comida_res)
+
+    # Pellets cercanos suben:
+    if pelletCercano < 2:
+        score = score + (pelletCercano * 5)
+
+    return score
+
 
 
 # Abbreviation
