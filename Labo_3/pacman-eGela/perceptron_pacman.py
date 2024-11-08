@@ -40,6 +40,9 @@ class PerceptronClassifierPacman(PerceptronClassifier):
             guesses.append(vectors.argMax())
         return guesses
 
+        # El vector de pesos tiene un valor por cada una de las caracteristicas y datum contiene por cada movimiento un valor para cada caracteristica
+        # Obtiene la clase o las clases con mayor producto escalar
+
     def train(self, trainingData, trainingLabels, validationData, validationLabels):
         self.features = trainingData[0][0]['Stop'].keys()  # could be useful later
         # DO NOT ZERO OUT YOUR WEIGHTS BEFORE STARTING TRAINING, OR
@@ -48,5 +51,20 @@ class PerceptronClassifierPacman(PerceptronClassifier):
         for iteration in range(self.max_iterations):
             print("Starting iteration ", iteration, "...")
             for i in range(len(trainingData)):
+
                 "*** YOUR CODE HERE ***"
-                util.raiseNotDefined()
+
+                for j in range(len(trainingData[i][1])):
+                    stateFeatures = trainingData[i][0]  # Las características del estado actual por cada movimiento
+                    legalMoves = trainingData[i][1]  # Los movimientos legales para el estado
+
+                    realLabel = trainingLabels[i]  # La etiqueta real (correcta) para este estado
+                    predictedLabel = self.classify([trainingData[i]])[0]  # La etiqueta predicha por el modelo
+
+                    if realLabel != predictedLabel:
+                        featureValue = stateFeatures[realLabel]  # Valor de la característica asociada al movimiento real
+                        self.weights += featureValue
+
+                        predictedFeatureValue = stateFeatures[predictedLabel]  # Valor de la característica asociada al movimiento predicho
+                        self.weights -= predictedFeatureValue
+                
