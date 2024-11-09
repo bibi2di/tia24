@@ -54,17 +54,28 @@ class PerceptronClassifierPacman(PerceptronClassifier):
 
                 "*** YOUR CODE HERE ***"
 
-                for j in range(len(trainingData[i][1])):
-                    stateFeatures = trainingData[i][0]  # Las características del estado actual por cada movimiento
-                    legalMoves = trainingData[i][1]  # Los movimientos legales para el estado
+                # VERSION 1
+                """for i in range(len(trainingData)):  # Recorre cada instancia de entrenamiento
+                    for j in range(len(trainingData[i][1])):  # Recorre los movimientos legales para cada estado
+                        realLabel = trainingLabels[i]
+                        predictedLabel = self.classify([trainingData[i]])[0] # Clasifica el estado actual usando el modelo para obtener la etiqueta predicha
+                        
+                        # Si la predicción no coincide con la etiqueta real, ajustamos los pesos
+                        if realLabel != predictedLabel:
+                            self.weights += trainingData[i][0][trainingData[i][1][j]]
+                            self.weights -= trainingData[i][0][predictedLabel]"""
 
-                    realLabel = trainingLabels[i]  # La etiqueta real (correcta) para este estado
-                    predictedLabel = self.classify([trainingData[i]])[0]  # La etiqueta predicha por el modelo
+                stateFeatures = trainingData[i][0]
+                legalMoves = trainingData[i][1]
 
-                    if realLabel != predictedLabel:
-                        featureValue = stateFeatures[realLabel]  # Valor de la característica asociada al movimiento real
-                        self.weights += featureValue
+                # Etiqueta correcta y predicción
+                realLabel = trainingLabels[i]
+                predictedLabel = self.classify([trainingData[i]])[0] #Devuelve las clases con mayor producto escalar (se coge la primera)
 
-                        predictedFeatureValue = stateFeatures[predictedLabel]  # Valor de la característica asociada al movimiento predicho
-                        self.weights -= predictedFeatureValue
-                
+                # Ajuste de pesos si la predicción es incorrecta
+                if realLabel != predictedLabel:
+                    featureValue = stateFeatures[realLabel]
+                    self.weights += featureValue
+
+                    predictedFeatureValue = stateFeatures[predictedLabel]
+                    self.weights -= predictedFeatureValue"""
