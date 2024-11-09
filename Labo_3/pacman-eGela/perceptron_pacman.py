@@ -78,4 +78,4 @@ class PerceptronClassifierPacman(PerceptronClassifier):
                     self.weights += featureValue
 
                     predictedFeatureValue = stateFeatures[predictedLabel]
-                    self.weights -= predictedFeatureValue"""
+                    self.weights -= predictedFeatureValue
