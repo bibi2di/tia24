@@ -124,6 +124,7 @@ def enhancedPacmanFeatures(state, action):
 
     "*** YOUR CODE HERE ***"
 
+    # comida cercana
     minFoodDist = float('inf')
     for food in foods:
         dist = util.manhattanDistance(food, pac)
@@ -149,12 +150,12 @@ def enhancedPacmanFeatures(state, action):
         dist = util.manhattanDistance(pac, capsule)
         minCapsuleDist = min(minCapsuleDist, dist)
 
-    if minCapsuleDist != 9999:
+    if minCapsuleDist !=  float('inf'):
         features["capsules"] = 1.0 / minCapsuleDist
     else:
         features["capsules"] = 0
     
-    #añadido si esta parado
+    #stop
     if action == 'Stop':
         features['Stop'] = 1
     else:
@@ -170,10 +171,10 @@ def enhancedPacmanFeatures(state, action):
 
     # Obtener posiciones de los elementos relevantes del juego
     pac = state.getPacmanPosition()
-    ghostPositions = state.getGhostPositions()  # Posiciones de los fantasmas
-    foodList = state.getFood().asList()  # Lista de posiciones de comida
-    ghostStates = state.getGhostStates()  # Estados de los fantasmas
-    capsules = state.getCapsules()  # Cápsulas de energía
+    ghostPositions = state.getGhostPositions()  
+    foodList = state.getFood().asList()  
+    ghostStates = state.getGhostStates()  
+    capsules = state.getCapsules() 
 
     "*** YOUR CODE HERE ***"
 
