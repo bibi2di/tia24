@@ -67,7 +67,7 @@ def enhancedFeatureExtractorDigit(datum):
     features = basicFeatureExtractorDigit(datum)
 
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    #util.raiseNotDefined()
 
     return features
 
@@ -112,34 +112,99 @@ def enhancedPacmanFeatures(state, action):
     For each state, this function is called with each legal action.
     It should return a counter with { <feature name> : <feature value>, ... }
     """
+
+    #VERSION 1
+    """
     features = util.Counter()
     state = state.generateSuccessor(0, action)
-    foods = state.getFood().asList()
     pac = state.getPacmanPosition()
     ghostPositions = state.getGhostPositions()
+    foods = state.getFood().asList()
+    capsus = state.getCapsules()
 
     "*** YOUR CODE HERE ***"
 
-    minD = 9999
+    minFoodDist = float('inf')
     for food in foods:
-        d = util.manhattanDistance(food, pac)
-        minD = min(d, minD)
+        dist = util.manhattanDistance(food, pac)
+        minFoodDist = min(minFoodDist, dist)
 
-    if minD != 9999:
-        features["closest food"] = 1.0 / minD  # con esto te da 4
+    if minFoodDist != float('inf'):
+        features["closest food"] = 1.0 / minFoodDist  # con esto te da 4
         # features["closest food"] = minD#con esto te da 2 puntos
     else:
         features["closest food"] = 2
 
-    # if features["closest food"]==0:
-    # pdb.set_trace()
+    minGhostDist = float('inf')
+    #fantasma mas cercano
+    for ghost in ghostPositions:
+        dist = util.manhattanDistance(pac, ghost)
+        minGhostDist = min(minGhostDist, dist)
 
-    minD = 10000000000
-    for ghost in state.getGhostPositions():
-        d = util.manhattanDistance(pac, ghost)
-        minD = min(d, minD)
+    features["closest ghost"] = minGhostDist  
 
-    features["closest ghost"] = minD  # 1/pow(minD,2)
+    #capsulas
+    minCapsuleDist = float('inf')
+    for capsule in capsus:
+        dist = util.manhattanDistance(pac, capsule)
+        minCapsuleDist = min(minCapsuleDist, dist)
+
+    if minCapsuleDist != 9999:
+        features["capsules"] = 1.0 / minCapsuleDist
+    else:
+        features["capsules"] = 0
+    
+    #añadido si esta parado
+    if action == 'Stop':
+        features['Stop'] = 1
+    else:
+        features['Stop'] = 0
+    
+    return features
+    """
+
+    #VERSION FINAL
+    
+    features = util.Counter()
+    state = state.generateSuccessor(0, action)
+
+    # Obtener posiciones de los elementos relevantes del juego
+    pac = state.getPacmanPosition()
+    ghostPositions = state.getGhostPositions()  # Posiciones de los fantasmas
+    foodList = state.getFood().asList()  # Lista de posiciones de comida
+    ghostStates = state.getGhostStates()  # Estados de los fantasmas
+    capsules = state.getCapsules()  # Cápsulas de energía
+
+    "*** YOUR CODE HERE ***"
+
+    # --- Distancia mínima a la comida ---
+    minFoodDist = float('inf')
+    for food in foodList:
+        dist = util.manhattanDistance(pac, food)
+        minFoodDist = min(minFoodDist, dist)
+    features["closest food"] = 1.0 / (minFoodDist + 1)  # Invertir la distancia (priorizar comida cercana)
+
+    # --- Distancia mínima a los fantasmas ---
+    minGhostDist = float('inf')
+    for i, ghostPos in enumerate(ghostPositions):
+        dist = util.manhattanDistance(pac, ghostPos)
+        if ghostStates[i].scaredTimer > 0:  # Si el fantasma está asustado, no se cuenta como amenaza
+            dist = float('inf')
+        minGhostDist = min(minGhostDist, dist)
+    features["closest ghost"] = 1.0 / (minGhostDist + 1)  # Invertir la distancia (priorizar evitar fantasmas cercanos)
+
+    # --- Distancia mínima a las cápsulas de energía ---
+    minCapsuleDist = float('inf')
+    for capsule in capsules:
+        dist = util.manhattanDistance(pac, capsule)
+        minCapsuleDist = min(minCapsuleDist, dist)
+    features["closest capsule"] = 1.0 / (minCapsuleDist + 1)  # Invertir la distancia (priorizar las cápsulas cercanas)
+
+    # --- Acción Stop ---
+    if action == 'Stop':
+        features['Stop'] = 1
+    else:
+        features['Stop'] = 0
 
     return features
 

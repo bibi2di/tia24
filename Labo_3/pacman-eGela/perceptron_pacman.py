@@ -54,17 +54,6 @@ class PerceptronClassifierPacman(PerceptronClassifier):
 
                 "*** YOUR CODE HERE ***"
 
-                # VERSION 1
-                """for i in range(len(trainingData)):  # Recorre cada instancia de entrenamiento
-                    for j in range(len(trainingData[i][1])):  # Recorre los movimientos legales para cada estado
-                        realLabel = trainingLabels[i]
-                        predictedLabel = self.classify([trainingData[i]])[0] # Clasifica el estado actual usando el modelo para obtener la etiqueta predicha
-                        
-                        # Si la predicción no coincide con la etiqueta real, ajustamos los pesos
-                        if realLabel != predictedLabel:
-                            self.weights += trainingData[i][0][trainingData[i][1][j]]
-                            self.weights -= trainingData[i][0][predictedLabel]"""
-
                 stateFeatures = trainingData[i][0]
                 legalMoves = trainingData[i][1]
 
