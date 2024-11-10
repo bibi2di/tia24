@@ -76,7 +76,6 @@ class PerceptronClassifier:
                 #          Recordad tambien que es una clasificacion multiclase en este caso. Hay tantas clases como nos marca el atributo self.legalLabels
                 #########################################################################################
                 #"*** YOUR CODE HERE ***"
-                
 
                 for j in range(len(self.legalLabels)):
                     weight = self.weights[self.legalLabels[j]]
@@ -114,11 +113,11 @@ class PerceptronClassifier:
                 #########################################################################################
                 #"*** YOUR CODE HERE ***"
 
-                """Explicación variables:
-                    trainingData --> Conjunto de entrenamiento // Tipo: lista de [vector: clase]
-                    legalLabels --> Clases que el modelo tiene que predecir // Tipo: lista números
-                    weights --> Vector de pesos asociado a cada clase // Tipo: [vector: clase]
-                    trainingLabels --> Clase de legalLabels que se tiene en cuenta para el entrenamiento // Tipo: número
+                """Variables:
+                trainingData --> Conjunto de entrenamiento // Tipo: lista de [vector: clase]
+                legalLabels --> Clases que el modelo tiene que predecir // Tipo: lista num
+                weights --> Vector de pesos asociado a cada clase // Tipo: [vector: clase]
+                trainingLabels --> Clase de legalLabels que se tiene en cuenta para el entrenamiento // Tipo: num
                 """
 
                 """Como modificar vector pesos:
