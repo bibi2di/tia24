@@ -137,14 +137,14 @@ def enhancedPacmanFeatures(state, action):
         features["closest food"] = 2
 
     minGhostDist = float('inf')
-    #fantasma mas cercano
+    #fantasma cercano
     for ghost in ghostPositions:
         dist = util.manhattanDistance(pac, ghost)
         minGhostDist = min(minGhostDist, dist)
 
     features["closest ghost"] = minGhostDist  
 
-    #capsulas
+    # capsula cercana
     minCapsuleDist = float('inf')
     for capsule in capsus:
         dist = util.manhattanDistance(pac, capsule)
@@ -178,30 +178,30 @@ def enhancedPacmanFeatures(state, action):
 
     "*** YOUR CODE HERE ***"
 
-    # --- Distancia mínima a la comida ---
+    # Comida cercana
     minFoodDist = float('inf')
     for food in foodList:
         dist = util.manhattanDistance(pac, food)
         minFoodDist = min(minFoodDist, dist)
-    features["closest food"] = 1.0 / (minFoodDist + 1)  # Invertir la distancia (priorizar comida cercana)
+    features["closest food"] = 1.0 / (minFoodDist + 1) 
 
-    # --- Distancia mínima a los fantasmas ---
+    # Fantasma cercano
     minGhostDist = float('inf')
     for i, ghostPos in enumerate(ghostPositions):
         dist = util.manhattanDistance(pac, ghostPos)
         if ghostStates[i].scaredTimer > 0:  # Si el fantasma está asustado, no se cuenta como amenaza
             dist = float('inf')
         minGhostDist = min(minGhostDist, dist)
-    features["closest ghost"] = 1.0 / (minGhostDist + 1)  # Invertir la distancia (priorizar evitar fantasmas cercanos)
+    features["closest ghost"] = 1.0 / (minGhostDist + 1)  
 
-    # --- Distancia mínima a las cápsulas de energía ---
+    # Capsula cercana
     minCapsuleDist = float('inf')
     for capsule in capsules:
         dist = util.manhattanDistance(pac, capsule)
         minCapsuleDist = min(minCapsuleDist, dist)
-    features["closest capsule"] = 1.0 / (minCapsuleDist + 1)  # Invertir la distancia (priorizar las cápsulas cercanas)
+    features["closest capsule"] = 1.0 / (minCapsuleDist + 1) 
 
-    # --- Acción Stop ---
+    # Stop
     if action == 'Stop':
         features['Stop'] = 1
     else:

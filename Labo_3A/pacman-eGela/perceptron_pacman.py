@@ -40,9 +40,6 @@ class PerceptronClassifierPacman(PerceptronClassifier):
             guesses.append(vectors.argMax())
         return guesses
 
-        # El vector de pesos tiene un valor por cada una de las caracteristicas y datum contiene por cada movimiento un valor para cada caracteristica
-        # Obtiene la clase o las clases con mayor producto escalar
-
     def train(self, trainingData, trainingLabels, validationData, validationLabels):
         self.features = trainingData[0][0]['Stop'].keys()  # could be useful later
         # DO NOT ZERO OUT YOUR WEIGHTS BEFORE STARTING TRAINING, OR
