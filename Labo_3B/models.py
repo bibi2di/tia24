@@ -21,9 +21,18 @@ class RegressionModel(object):
         # self.lr = -0.01
         #
         "*** YOUR CODE HERE ***"
+        
+        # Inicialización de la red neuronal 
+        # La primera es 1 porque se introduce el valor de x para predecir el nodo
+        # Primer param --> numEntradas 
+        # Segundo param --> numNeuronas --> 1 BIAS por neurona
 
-
-
+        self.batch_size = 1 # Cuantos valores analiza a la vez
+        self.w0 = nn.Parameter(1, 50)
+        self.b0 = nn.Parameter(1, 50)
+        self.w1 = nn.Parameter(50, 1)
+        self.b1 = nn.Parameter(1, 1)
+        self.lr = -0.01
 
 
     def run(self, x):
@@ -38,10 +47,14 @@ class RegressionModel(object):
         """
         "*** YOUR CODE HERE ***"
 
+        # Calcula el valor predecido del seno
 
-
-
-
+        prod0 = nn.Linear(x, self.w0) # Multiplica la matriz de pesos por la entrada
+        sesgo0 = nn.AddBias(prod0, self.b0) #Añade el bias
+        capa_esc = nn.ReLU(sesgo0) #Calcula el seno de la salida
+        prod1= nn.Linear(capa_esc, self.w1) # Multiplica la matriz de pesos por la entrada
+        sesgo1 = nn.AddBias(prod1, self.b1) #Añade el bias
+        return sesgo1 # No introducimos la ReLu al final porque solo predice valores
 
 
     def get_loss(self, x, y):
@@ -58,9 +71,9 @@ class RegressionModel(object):
         """
         "*** YOUR CODE HERE ***"
 
+        # Error cometido, lo calcula con min square error
 
-
-
+        return nn.SquareLoss(self.run(x), y)
 
 
     def train(self, dataset):
@@ -78,9 +91,17 @@ class RegressionModel(object):
 
             "*** YOUR CODE HERE ***"
 
+            for x, y in dataset.iterate_once(batch_size):
+                perdida = self.get_loss(x,y)
 
+                gradientes = nn.gradients(perdida, [self.w0, self.b0, self.w1, self.b1]) # Calcula el gradiente de la perdida de los pesos y el bias
 
-
+                self.w0.update(gradientes[0], self.lr) # update es el peso actual - gradiente*learning rate
+                self.b0.update(gradientes[1], self.lr) 
+                self.w1.update(gradientes[2], self.lr)
+                self.b1.update(gradientes[3], self.lr)
+            
+            total_loss = nn.as_scalar(self.get_loss(nn.Constant(dataset.x), nn.Constant(dataset.y)))
 
             
 class DigitClassificationModel(object):
@@ -108,6 +129,19 @@ class DigitClassificationModel(object):
  
         "*** YOUR CODE HERE ***"
 
+        self.batch_size = 10
+
+        self.w0 = nn.Parameter(pixel_vector_length, 300)
+        self.b0 = nn.Parameter(1, 300)
+        self.w1 = nn.Parameter(300, 100)
+        self.b1 = nn.Parameter(1, 100)
+        self.w2 = nn.Parameter(100, 50)
+        self.b2 = nn.Parameter(1, 50)
+        self.w3 = nn.Parameter(50, output_size)
+        self.b3 = nn.Parameter(1, output_size)
+        self.lr = -0.01
+
+
      
 
     def run(self, x):
@@ -127,9 +161,18 @@ class DigitClassificationModel(object):
         """
         "*** YOUR CODE HERE ***"
 
-
-
-
+        prod0 = nn.Linear(x, self.w0) # Multiplica la matriz de pesos por la entrada
+        sesgo0 = nn.AddBias(prod0, self.b0) #Añade el bias
+        capa_esc0 = nn.ReLU(sesgo0) #Calcula el seno de la salida
+        prod1= nn.Linear(capa_esc0, self.w1) # Multiplica la matriz de pesos por la entrada
+        sesgo1 = nn.AddBias(prod1, self.b1) #Añade el bias
+        capa_esc1 = nn.ReLU(sesgo1)
+        prod2 = nn.Linear(capa_esc1, self.w2)
+        sesgo2 = nn.AddBias(prod2, self.b2)
+        capa_esc2 = nn.ReLU(sesgo2)
+        prod3 = nn.Linear(capa_esc2, self.w3)
+        sesgo3 = nn.AddBias(prod3, self.b3)
+        return sesgo3 # No introducimos la ReLu al final porque solo predice valores
 
     def get_loss(self, x, y):
         """
@@ -168,6 +211,25 @@ class DigitClassificationModel(object):
             #ACTUALIZAR LOS PESOS EN BASE AL ERROR loss = self.get_loss(x, y) QUE RECORDAD QUE GENERA
             #UNA FUNCION DE LA LA CUAL SE  PUEDE CALCULAR LA DERIVADA (GRADIENTE)
             "*** YOUR CODE HERE ***"
+
+            for x, y in dataset.iterate_once(batch_size):
+                perdida = self.get_loss(x,y)
+
+                gradientes = nn.gradients(perdida, [self.w0, self.b0, self.w1, self.b1, self.w2, self.b2, self.w3, self.b3]) # Calcula el gradiente de la perdida de los pesos y el bias
+
+                self.w0.update(gradientes[0], self.lr) # update es el peso actual + gradiente*learning rate
+                self.b0.update(gradientes[1], self.lr) 
+                self.w1.update(gradientes[2], self.lr)
+                self.b1.update(gradientes[3], self.lr)
+                self.w2.update(gradientes[4], self.lr)
+                self.b2.update(gradientes[5], self.lr)
+                self.w3.update(gradientes[6], self.lr)
+                self.b3.update(gradientes[7], self.lr)
+            
+            total_loss = nn.as_scalar(self.get_loss(nn.Constant(dataset.x), nn.Constant(dataset.y)))
+
+
+
 
 
 
