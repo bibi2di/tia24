@@ -249,7 +249,7 @@ class DigitClassificationModel(object):
 
                 gradients = nn.gradients(loss, [self.w0, self.b0, self.w1, self.b1, self.w2, self.b2, self.w3, self.b3]) # Calcula el gradiente de la loss de los pesos y el bias
 
-                self.w0.update(gradients[0], self.lr) # update es el peso actual + gradiente*learning rate
+                self.w0.update(gradients[0], self.lr) # update es el peso actual - gradiente*learning rate
                 self.b0.update(gradients[1], self.lr) 
                 self.w1.update(gradients[2], self.lr)
                 self.b1.update(gradients[3], self.lr)
@@ -270,9 +270,9 @@ class DigitClassificationModel(object):
                 self.b2.update(gradients[5], self.lr)
                 
                 """
-                new_loss = self.get_loss(nn.Constant(dataset.x), nn.Constant(dataset.y))
+                #new_loss = self.get_loss(nn.Constant(dataset.x), nn.Constant(dataset.y))
             
-            total_loss = nn.as_scalar(new_loss) # Transforma la pérdida en un float de python
+            #total_loss = nn.as_scalar(new_loss) # Transforma la pérdida en un float de python
 
 
 
