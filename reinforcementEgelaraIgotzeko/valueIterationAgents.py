@@ -77,6 +77,7 @@ class ValueIterationAgent(ValueEstimationAgent):
 
         # ERROR: Primero se calculan todos los valores asociados a los estados y luego se actualizan para calcular la siguiente iteración
 
+        
         states = self.mdp.getStates()
         new_iteration_values = self.values.copy()
 

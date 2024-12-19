@@ -78,7 +78,7 @@ class QLearningAgent(ReinforcementAgent):
         """
 
         # ERROR: Puede que 0 no refleje correctamente el valor máximo porque puede que haya qValues con valor negativo
-
+        
         maxValue = float('-inf')
         legalActions = self.getLegalActions(state)
 
@@ -117,9 +117,6 @@ class QLearningAgent(ReinforcementAgent):
         
         return random.choice(bestActions)
               
-
-
-
     def getAction(self, state):
         """
           Compute the action to take in the current state.  With
@@ -134,8 +131,14 @@ class QLearningAgent(ReinforcementAgent):
         # Pick Action
         legalActions = self.getLegalActions(state)
         action = None
+                    
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        if legalActions:
+            if util.flipCoin(self.epsilon): #Compara el epsilon con un valor entre 0 y 1 (Si epsilon > random --> Explora)
+              action = random.choice(legalActions)
+            else: #(Si epsilon < random --> Explota conocimiento)
+              action = self.computeActionFromQValues(state)
+
 
         return action
 
